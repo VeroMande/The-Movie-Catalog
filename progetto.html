@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name=”viewport” content=”width=device-width, initial-scale=1.0″>
+
+
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Progetto</title>
+
+
+
+
+  <script>
+
+
+//prendo il genere più visto tra i film dell'utente(salvati nel session storage)
+function UserGenreMostViewed() {
+  if(sessionStorage.getItem('genres_seen')===null) {
+
+    return null
+  } else {
+    var dict=JSON.parse(sessionStorage.getItem('genres_seen'))
+
+    var max=0
+    var value=""
+    for(var key in dict) {
+      if(dict[key]>max) {
+        max=dict[key]
+        value=key
+      }
+    }
+    return value
+  }
+}
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  
+//menu dei generi
+
+get_url("https://api.themoviedb.org/3/genre/movie/list?api_key=e5cc0a861c328c8c659316a3fe327d0f", function(status,data) {
+
+  for(i = 0; i < data.genres.length; i++) {
+    var id= data.genres[i].id
+                        //onClick=\" getId(" + data.genres[i].id +"); nascondi(document.getElementById('carousel')) \"
+            document.getElementById('menu_generi').innerHTML += "<button type='button' onClick=location.href='generi.html?id="+id+"' class='list-group-item list-group-item-action'  >"+ data.genres[i].name+"</button>"  //classe definita in bootstrap
+          } 
+        });
+
+
+//o nessuno loggato o shopkeeper loggato
+if ((sessionStorage.getItem('ShopkeeperLogged') != null) || ((sessionStorage.getItem('ShopkeeperLogged') == null) && (sessionStorage.getItem('UserLogged') == null))) {
+  nascondi(document.getElementById('containerCarouselUser'))
+
+    //funzioni per disabilitare carrello
+    nascondi(document.getElementById('imgCart'))
+    document.getElementById('cart').href="javascript:void(0)"
+    document.getElementById('cart').style="pointer-events: none"
+    document.getElementById('cart').style="cursor:default"
+
+
+//script carousel-->TRENIDNG FILMS//
+get_url("https://api.themoviedb.org/3/trending/movie/week?api_key=e5cc0a861c328c8c659316a3fe327d0f", function(status,data) {
+  for(i = 0; i < data.results.length; i++) {
+    if( i<5) {
+      if(data.results[i].poster_path==null) {
+        document.getElementById('slide1').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+      } else {
+        document.getElementById('slide1').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.results[i].poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+      }
+
+    } else if (i>=5 && i<10)  {
+      if(data.results[i].poster_path==null) {
+        document.getElementById('slide2').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+      } else {
+
+        document.getElementById('slide2').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.results[i].poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+      }
+
+    } else if(i>=10 && i<15) {
+      if(data.results[i].poster_path==null) {
+        document.getElementById('slide3').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+      } else {
+        document.getElementById('slide3').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.results[i].poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+      }
+
+    }
+
+  }
+
+});
+
+
+
+//script carousel 2-->CAMPIONI D'INCASSI//
+get_url("https://api.themoviedb.org/3/discover/movie?api_key=e5cc0a861c328c8c659316a3fe327d0f&language=en-US&sort_by=revenue.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate", function(status,data) {
+  for(i = 0; i < data.results.length; i++) {
+    if( i<5) {
+      if(data.results[i].poster_path==null) {
+       document.getElementById('slide4').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+     } else {
+      document.getElementById('slide4').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.results[i].poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+    }
+
+    
+  } else if (i>=5 && i<10)  {
+    if(data.results[i].poster_path==null) {
+     document.getElementById('slide5').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+   } else {
+    document.getElementById('slide5').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.results[i].poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+  }
+
+} else if(i>=10 && i<15) {
+  if(data.results[i].poster_path==null) {
+   document.getElementById('slide6').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+ } else {
+  document.getElementById('slide6').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+data.results[i].title.toUpperCase()+"</span><span id='year_caption'>"+data.results[i].release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.results[i].id + "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.results[i].poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+}
+
+}
+
+}
+
+});
+
+
+//loggato Utente
+
+} else if((sessionStorage.getItem('UserLogged') != null)) {
+
+
+
+  mostra(document.getElementById('imgCart'))
+  nascondi(document.getElementById('containerCarousel'))
+
+  favouriteGenres()
+  MostSeenGenre()
+
+}
+
+});
+
+
+
+
+
+function favouriteGenres() {
+//prendo tutti i film in vendita
+
+var shopkeepers=JSON.parse(localStorage.getItem('RegisteredShopkeepers'))
+
+for (i=0; i<shopkeepers.length; i++) {
+  
+
+ var catalog=JSON.parse(shopkeepers[i]['catalog'])
+ 
+ for ( var j= 0; j< catalog.length; j++) {
+  showFavouritesFilms(shopkeepers[i],catalog[j]);
+}
+}
+}
+
+
+var count=0
+
+function showFavouritesFilms(shopkeeper,item) {
+
+//tra quelli in vendita prendo solo quelli del mio genere preferito
+var user= JSON.parse(sessionStorage.getItem('UserLogged'))
+var fav_gen=JSON.parse(user['favourites_genres'])
+
+if (fav_gen.length>0) {
+  
+
+
+ get_film(item,function(status,data) {
+
+
+  for(var g=0;g<data.genres.length;g++) {
+
+    if(data.genres[g].name == fav_gen[0]) {
+      if(count<5)  {
+        if(data.poster_path==null) {
+          document.getElementById('slide7').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+          count++
+        } else {
+          
+          
+          document.getElementById('slide7').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+          count++
+        }
+      } else if(count>=5 && count <10) {
+        if(data.poster_path==null) {
+          document.getElementById('slide8').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+          count++
+        } else {
+         document.getElementById('slide8').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+         count++
+       }
+     } else if(count>=10 && count <15) {
+      if(data.poster_path==null) {
+        document.getElementById('slide9').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src='loc_error.jpg'  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+        count++
+      } else {
+        document.getElementById('slide9').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id +"&shopkeeper="+shopkeeper['company_name']+ "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+        count++
+      }
+    }
+
+  }
+}
+
+});
+
+}
+}
+
+
+
+
+
+var count2=0
+function MostSeenGenre() {
+ //scorro tutti i film in vendita
+ var shopkeepers=JSON.parse(localStorage.getItem('RegisteredShopkeepers'))
+
+ for (i=0; i<shopkeepers.length; i++) {
+  
+
+   var catalog=JSON.parse(shopkeepers[i]['catalog'])
+   
+   for ( var j= 0; j< catalog.length; j++) {
+    showRecommendedFilms(shopkeepers[i],catalog[j]);
+
+  }
+}
+}
+
+function showRecommendedFilms(shopkeeper,item) {
+
+//prendo i film in vendita del genere più visto dell'utente
+var user= JSON.parse(sessionStorage.getItem('UserLogged'))
+
+
+var genre=UserGenreMostViewed()
+if (genre!=null) {
+  
+ 
+  get_film(item,function(status,data) {
+    for(var g=0;g<data.genres.length;g++) {
+      if( data.genres[g].name==genre){
+
+        
+
+        if(count2<5)  {
+          if(data.poster_path==null) {
+            document.getElementById('slide10').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src='loc_error.jpg' onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+            count2++
+
+          } else {
+
+           
+
+            document.getElementById('slide10').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+            count2++
+          }
+        } else if(count2>=5 && count2 <10) {
+         if(data.poster_path==null) {
+          document.getElementById('slide11').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src='loc_error.jpg' onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+          count2++
+
+        } else {
+
+         document.getElementById('slide11').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+         count2++
+       }
+     } else if(count2>=10 && count2 <15) {
+       if(data.poster_path==null) {
+        document.getElementById('slide12').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id + "&shopkeeper="+shopkeeper['company_name']+"'> <img  src='loc_error.jpg' onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+        count2++
+
+      } else {
+        document.getElementById('slide12').innerHTML += "<div class='caption_carousel'><span id='title_caption'>"+shopkeeper['company_name']+"</span><span id='year_caption'>"+data.release_date.substring(0,4)+"</span> <a href='info_film.html?id="+ data.id +"&shopkeeper="+shopkeeper['company_name']+ "'> <img  src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +"\"  onMouseover=\"cambiacolore(getElementById('year_caption'))\"></div>";
+        count2++
+      }
+    }
+
+  }
+}
+
+
+
+});
+} else {
+  nascondi(document.getElementById('filmRecommended'))
+}
+}
+
+
+
+
+
+
+
+
+
+
+function Search() {
+  
+  var regex = /^[^a-z0-9]+$/i; //^ -->tutti i valori tranne quelli specificati-->sono i valori sbagliati
+
+  //se i valori inseriti sono tutti i possibili(tranne lettere e numeri) do errore
+  if((document.getElementById('search').value.match(regex)) || (document.getElementById('search').value=="")) {
+    alert('No results for this search');
+
+  } else {
+  //se sono loggato da utente
+  if ((sessionStorage.getItem('UserLogged') != null) ) {
+   
+    SearchMovieForUsers() 
+
+  } else if ((sessionStorage.getItem('ShopkeeperLogged') != null) || ( (sessionStorage.getItem('UserLogged') === null) && (sessionStorage.getItem('ShopkeeperLogged') === null) )) {
+
+    SearchMovie(1)
+  }
+}
+}
+
+
+</script>
+
+
+</head>
+
+
+<body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  <!--NAVBAR-->
+  <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="progetto.html" style="color:white">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+          </li>
+          <li class="nav-item" >
+            <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;display:none"></a>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+
+
+  <!--la Search-->
+  <div style="background-color:#e3c9ee;width: 100%;height:250px">
+    <h1 style="color:#721e88;padding-top: 35px;padding-left: 30px"><b>The movie catalog</b></h1>
+    <h5  style="color:black;padding-left: 30px"> <i>Search for your favourite among milions of movies!</i></h5>
+    <form class="d-flex" onSubmit="return false;" action="#">
+      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search">
+      <button class="btn btn-outline-dark" type="submit" onclick="Search()">Search</button>
+    </form>
+  </div>
+
+
+  <div class="row">
+    <div class="col-2" id="menu_generi">
+      
+    </div>
+    <div class="col-10">
+
+      <div id="containerCarouselUser" >
+
+        <div  style="margin-top: 20px">
+          <h1>Chosen for you</h1>
+          <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false" data-bs-interval="false">
+           <div class="carousel-inner" >
+            <div class="carousel-item active" >
+              <div id="slide7" ></div>
+
+            </div>
+            <div class="carousel-item">
+              <div id="slide8"  ></div>
+
+            </div>
+            <div class="carousel-item">
+              <div id="slide9"></div>
+
+            </div>
+
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsNoTouching"  data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsNoTouching"  data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="filmRecommended" style="margin-top: 60px">
+        <h1 >Recommended on your past purchases</h1>
+        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner" >
+            <div class="carousel-item active" data-bs-interval="10000" >
+              <div id="slide10" ></div>
+
+            </div>
+            <div class="carousel-item"  data-bs-interval="2000">
+             <div id="slide11"  ></div>
+
+           </div>
+           <div class="carousel-item" >
+             <div id="slide12"></div>
+
+           </div>
+
+         </div>
+         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"  data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"  data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!--carousel bootstrap-->
+  <div id="containerCarousel" >
+
+    <div  style="margin-top: 20px">
+      <h1>Trending this week</h1>
+      <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+       <div class="carousel-inner" >
+        <div class="carousel-item active" >
+          <div id="slide1" ></div>
+
+        </div>
+        <div class="carousel-item">
+          <div id="slide2"  ></div>
+
+        </div>
+        <div class="carousel-item">
+          <div id="slide3"></div>
+
+        </div>
+
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"  data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"  data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+  <div style="margin-top: 60px">
+    <h1>Highest grossing movies</h1>
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner" >
+        <div class="carousel-item active" >
+          <div id="slide4" ></div>
+
+        </div>
+        <div class="carousel-item">
+         <div id="slide5"  ></div>
+
+       </div>
+       <div class="carousel-item">
+         <div id="slide6"></div>
+
+       </div>
+
+     </div>
+     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"  data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"  data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+</div>
+
+
+
+<!--pulsanti per la barra di ricerca-->
+<div id="buttonChoices" style="display: none">
+ <span><button id="buttonFilms" class=" btn btn-outline-dark  "  style="width: 200px;height: 40px" onclick="mostra(document.getElementById('containerFilms'));nascondi(document.getElementById('containerAct'));disactivateButton(document.getElementById('buttonAct'));activateButton(document.getElementById('buttonFilms'))" >Films</button></span>
+ <span><button id="buttonAct" class=" btn btn-outline-dark" style="width: 200px;height: 40px"  onclick="mostra(document.getElementById('containerAct'));nascondi(document.getElementById('containerFilms'));activateButton(document.getElementById('buttonAct'));disactivateButton(document.getElementById('buttonFilms'));">Acthors</button></span>
+</div><br>
+<!--i due container per la barra di ricerca-->
+<div id="containerFilms" style="display: none" >
+  <div id="films"></div>
+  <nav aria-label="Page navigation example" style="clear:both">
+    <ul class="pagination  justify-content-end" id="paginationFilms"></ul>
+  </nav>
+</div>
+<div id="containerAct" style="display: none" >
+  <div id="acthors"></div>
+  <nav aria-label="Page navigation example" style="clear:both">
+    <ul class="pagination  justify-content-end" id="paginationAct">
+
+    </ul>
+  </nav>
+</div>
+</div>
+
+
+
+</div>
+
+
+</div>
+<footer>
+ <center style="padding-top: 30px">
+  <img src="logo_nero.png" width="100px">
+  <h6> Benedetta Spina & Veronica Mandelli</h6>
+  <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+</footer>
+</body>
+</html>

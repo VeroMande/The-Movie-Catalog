@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Action</title>
+  <script>
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+      mostraFilm();
+
+//se nessuno è loggato
+if( (sessionStorage.getItem('ShopkeeperLogged') == null) && (sessionStorage.getItem('UserLogged') == null)) {
+
+//funzioni per disabilitare carrello
+nascondi(document.getElementById('imgCart'))
+document.getElementById('cart').href="javascript:void(0)"
+document.getElementById('cart').style="pointer-events: none"
+document.getElementById('cart').style="cursor:default"
+
+
+
+document.getElementById('button').innerHTML="<div class='col-12'><button  class='btn btn-danger' id='shop' onclick='location.href=\"log_in.html\"'><h6>If you want to buy you must authenticate!</h6></button></div>"
+
+
+}
+const url = window.location.search;
+  const urlParams = new URLSearchParams(url);
+  var id=urlParams.get('id')
+
+
+//utente loggato
+
+if (sessionStorage.getItem('UserLogged') != null)  {
+
+  mostra(document.getElementById('imgCart'))
+
+  
+//passo nell'url anche chi è il venditore
+
+var company_name=urlParams.get('shopkeeper')
+
+var shopkeepers=JSON.parse(localStorage.getItem('RegisteredShopkeepers'))
+
+//film già nella lista-->e NON in scadenza se in renting
+if ((filmExistsInUserList(id)==true) && (timeOutRental()==false)) {
+
+  document.getElementById('button').innerHTML="<div class='col-12'><button  class='btn btn-success' > <img src='check.png' style='width:25px;margin-right:7px'><b>Available for the vision! </b></button></div>"
+
+  //film già nella lista-->e in scadenza se in renting
+} else if((filmExistsInUserList(id)==true) &&(timeOutRental()==true)) {
+  document.getElementById('button').innerHTML="<div class='col-12'><button  class='btn btn-danger'> <img src='clock.png' style='width:25px;margin-right:7px'><b>72 H of rental has expired!</b></button></div>"
+  //film già nel carrello
+} else if (filmExistsInCart(id)==true) {
+
+  document.getElementById('button').innerHTML="<div class='col-12'><button  class='btn btn-danger' disabled > <b>Already in the shopping Cart!</b></button></div>"
+//caso in cui il film non è già comprato e non è nel carrello
+} else {
+
+  for (i=0; i<shopkeepers.length; i++) {
+   if (shopkeepers[i]['company_name']===company_name) {
+    var sell= shopkeepers[i]['sellingPrice']
+    var rental=shopkeepers[i]['rentalPrice']
+
+    document.getElementById('button').innerHTML="<div class='col-4'><button  class='btn btn-warning' id='shop' onclick='myPopup(),changeButtom(),shopThisFilm()'><img src='cart.png' style='width:25px;margin-right:7px'><b>Buy the film for $"+sell+"</b></button></div><div class='col-4'><button class='btn btn-warning' id='rent'  onclick='myPopup(),changeButtom(),rentThisFilm()'><img src='clock.png' style='width:25px;margin-right:7px'><b>Rent the film for $"+rental+"</b></button></div><div class='col-4'></div>"
+  }
+}
+}
+
+
+
+//shopkeeper loggato
+
+} else if (sessionStorage.getItem('ShopkeeperLogged') != null) {
+
+    //funzioni per disabilitare carrello
+    nascondi(document.getElementById('imgCart'))
+    document.getElementById('cart').href="javascript:void(0)"
+    document.getElementById('cart').style="pointer-events: none"
+    document.getElementById('cart').style="cursor:default"
+//non compare la possibilità di votare
+nascondi(document.getElementById('ratingVote'))
+
+
+
+var Shopkeeper= JSON.parse(sessionStorage.getItem('ShopkeeperLogged'))
+var catalog=JSON.parse(Shopkeeper['catalog'])
+
+if (contains(catalog,id)) {
+  console.log('ciao')
+ document.getElementById('button').innerHTML="<div class='col-12'><button class='btn btn-danger' onclick=\"confirmDelete()\"><img src='list.png' style='width:35px;margin-right:7px'><b>Remove from your catalog</b></button></div>"
+
+
+} else if (!(contains(catalog,id))) {
+console.log('no')
+  document.getElementById('button').innerHTML="<div class='col-12'><button  class='btn btn-success' onclick=\"AddToCatalog(),alert('Added to your personal catalog!'),location.href='javascript:history.back()'\"><img src='list.png' style='width:35px;margin-right:7px'><b>Add to your catalog</b></button></div>"
+}
+
+
+}
+
+
+})
+
+
+
+</script>
+
+
+
+</head>
+
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+
+  <!--NAVBAR-->
+  <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="index.html" style="color:white">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+          </li>
+          <li class="nav-item" >
+            <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;display:none"></a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+
+  <div class="container" style="position: relative;">
+    <!-- POSSIBILI POPUP-->
+    <div class='popup' style="margin-left: 92%;margin-top: 40px;z-index: 2;position: absolute;"><span class='popuptext' id='myPopup' >Added to your cart!</span></div>
+    <div  class='popup' style="margin-left: 92%;margin-top: 20px ;z-index: 2;position: absolute;"><span class='popuptext' id='popup_vote' ><h4><img src="check.png" width="30px">DONE!</h4>Your vote has been saved!</span></div>
+
+    <div class="row"  id="info_film">
+      <div class="col-4" id="poster"></div>
+      <div class="col-8">
+        <div class="row">
+          <div class="col-12" id="titoloFilm"></div> 
+        </div></br>
+        <div class="row" id="button"></div>
+        <div class="row">
+          <div class="col-12" id="overview"></div>
+        </div>
+        <div class="row">
+          <div class="col-6" id="director"><h5>Director:</h5></div>
+          <div class="col-6" id="producer"><h5>Producer:</h5></div>
+        </div></br>
+        <div class="row">
+          <div class="col-6" id="vote_average">
+            <h5>Vote Avarage</h5>
+
+            <div class="flex-wrapper">
+
+              <div class="single-chart">
+                <svg viewBox="0 0 36 36" class="circular-chart blue">
+                  <path class="circle-bg"
+                  d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path class="circle" id="circle_vote"
+
+                  d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <text x="18" y="20.35" class="percentage" id="text_vote"></text>
+                </svg>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-6" id="ratingVote">
+            <h5>Give your vote!</h5>
+            <div class="rate">
+
+
+              <input type="radio" id="star5" name="rate" value="5"  onclick="vote(5)" />
+              <label for="star5" title="text">5 stars</label>
+              <input type="radio" id="star4" name="rate" value="4" onclick="vote(4)" />
+              <label for="star4" title="text">4 stars</label>
+              <input type="radio" id="star3" name="rate" value="3"  onclick="vote(3)" />
+              <label for="star3" title="text">3 stars</label>
+              <input type="radio" id="star2" name="rate" value="2" onclick="vote(2)" />
+              <label for="star2" title="text">2 stars</label>
+              <input type="radio" id="star1" name="rate" value="1" onclick="vote(1)" />
+              <label for="star1" title="text">1 star</label>
+
+            </div>
+
+
+          </div>
+
+
+
+
+
+        </div>
+        <!--riga per il POSSIBILE POPUP-->
+        <div class="row">
+          <div class="col-7"></div>
+          <div class="col-5">
+            <div class='popupBlack' style="margin-right:50px;z-index: 2;position: absolute;"><span class='popuptextBlack' id='popup_black' >To vote you have to <a href="log_in.html">log-in</a></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="wrapper">
+    </div>
+
+  </div>
+
+
+  <footer>
+   <center style="padding-top: 30px">
+    <img src="logo_nero.png" width="100px">
+    <h6> Benedetta Spina & Veronica Mandelli</h6>
+    <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+  </footer>
+
+
+</body>
+</html>
+
+

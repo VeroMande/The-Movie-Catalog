@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Cart</title>
+  <script>
+
+
+
+    function returnCompanyName(id) {
+      var cart=JSON.parse(sessionStorage.getItem('ShoppingCart'))
+
+      for (var i=0; i<cart.length; i++) {
+        if (cart[i]['id']==id) {
+          return cart[i]['company_name']
+        }
+      }
+
+    }
+
+    function returnPrice(id) {
+      var cart=JSON.parse(sessionStorage.getItem('ShoppingCart'))
+
+      for (var i=0; i<cart.length; i++) {
+        if (cart[i]['id']==id) {
+          return cart[i]['price']
+        }
+      }
+    }
+
+    function returnTot() {
+      var cart=JSON.parse(sessionStorage.getItem('ShoppingCart'))
+      var tot=0
+      for (var i=0; i<cart.length; i++) {
+
+       tot+= parseFloat(cart[i]['price'])
+
+     }
+     document.getElementById("tot").innerHTML="<h5> Total: $"+tot+"</h5>"
+     return tot
+   }
+
+
+
+   function rentOrSell(id) {
+    var cart=JSON.parse(sessionStorage.getItem('ShoppingCart'))
+
+    for (var i=0; i<cart.length; i++) {
+      if (cart[i]['id']==id) {
+        if(cart[i]['rental']==true) {
+          return "Rent available for 72H"
+        } else if(cart[i]['rental']==false) {
+         return "Perpetual Purchase"
+       }
+     }
+   }
+ }
+
+
+
+
+ document.addEventListener('DOMContentLoaded', function () {
+
+
+  if (sessionStorage.getItem('ShoppingCart')===null) {
+   nascondi(document.getElementById('payment'))
+   document.getElementById('itemsCart').innerHTML="<center><img src='empty-cart.jpg' width='300px' ></center>"
+ } else {
+  var cart=JSON.parse(sessionStorage.getItem('ShoppingCart'))
+
+        //se carrello è vuoto
+        if(cart.length==0 ) {
+
+          nascondi(document.getElementById('payment'))
+          document.getElementById('itemsCart').innerHTML="<center><img src='empty-cart.jpg' width='300px' ></center>"
+        } else {
+         mostra(document.getElementById('payment'))
+         for (var i=0; i<cart.length; i++) {
+
+          get_film(cart[i]['id'],function(status,data) {
+            if(data.poster_path==null) {
+              document.getElementById('itemsCart').innerHTML+="<div class='row' ><div class='col-1'><a onclick='removeFromCart("+data.id+")'><img src='trash.png' style='width:40%;padding-top:75px'></a></div><div class='col-2'><img  width='100%' src='loc_err.jpg'></div><div class='col-2'><h4 style='font-size:1.6vw'><b>"+data.title+"</b></h4></div><div class='col-1'></div><div class='col-2'><h5 style='font-size:1.3vw'>"+returnCompanyName(data.id)+"</h5></div><div class='col-2'><h6 style='font-size:1.2vw;color:blue'>"+rentOrSell(data.id)+"</h6></div><div class='col-2' style='text-align: right;'><h5 style='font-size:1.3vw'>$"+returnPrice(data.id)+"</h5></div></div></br>"
+
+            } else {
+
+             document.getElementById('itemsCart').innerHTML+="<div class='row' ><div class='col-1'><a onclick='removeFromCart("+data.id+")'><img src='trash.png' style='width:40%;padding-top:75px'></a></div><div class='col-2'><img  width='100%' src=\"https://image.tmdb.org/t/p/w500/" + data.poster_path +" \"></div><div class='col-2'><h4 style='font-size:1.6vw'><b>"+data.title+"</b></h4></div><div class='col-1'></div><div class='col-2'><h5 style='font-size:1.3vw'>"+returnCompanyName(data.id)+"</h5></div><div class='col-2'><h6 style='font-size:1.2vw;color:blue'>"+rentOrSell(data.id)+"</h6></div><div class='col-2' style='text-align: right;'><h5 style='font-size:1.3vw'>$"+returnPrice(data.id)+"</h5></div></div></br>"
+           }
+
+         });      
+
+        }
+        returnTot();
+      } 
+    }
+
+
+  })
+
+
+
+
+
+
+ function checkPayment() {
+
+
+  if (document.getElementById('cardNumberContainer').style!="none") {
+
+    ControllLength(document.getElementById('card-number'),document.getElementById('error_card-number'));
+    ControllLength(document.getElementById('cvv'),document.getElementById('error_cvv'));
+
+
+    if((checkCardNumber()==true) && (checkCvv()==true)) {
+      completePayment()
+
+            //addToUserList()
+            sessionStorage.removeItem('ShoppingCart');
+            alert('Congratulations! Your order is done!')
+            location.href="user_page.html"
+          }
+
+        }  
+        if (document.getElementById('paypalContainer').style!="none") {
+          ControllLength(document.getElementById('paypal'),document.getElementById('error_paypal'));
+          ControllLength(document.getElementById('pwdPay'),document.getElementById('error_pwdPay'));
+
+          if((checkPaypal()==true) && (checkPwdPaypal()==true)) {
+
+           completePayment()
+                // addToUserList()
+                sessionStorage.removeItem('ShoppingCart');
+                alert('Congratulations! Your order is done!')
+                location.href="user_page.html"
+              }
+            }
+
+          }
+
+
+
+
+
+
+        </script>
+      </head>
+      <body>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+        <!--NAVBAR-->
+        <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="index.html" style="color:white">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+                </li>
+                <li class="nav-item" >
+                  <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;"></a>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+
+        <div class="container" >
+          <h1 style="text-align: center;padding-bottom: 60px">Check Out</h1>
+          <div id="itemsCart"></div>
+          <div id="tot" style="text-align: right;"></div></br>
+
+          <div  class="row" style="height:300px" >
+
+
+            <div class="col-7" id="payment" style="padding-top: 30px;display: none">
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Choose your Payment Method</button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" onclick="mostra(document.getElementById('cardNumberContainer')),mostra(document.getElementById('buy')),nascondi(document.getElementById('paypalContainer'))">Credit Card</a></li>
+                  <li><a class="dropdown-item" onclick="mostra(document.getElementById('paypalContainer')),mostra(document.getElementById('buy')),nascondi(document.getElementById('cardNumberContainer'))">Paypal</a></li>
+
+                </ul>
+              </div>
+
+            </div>
+            <div class="col-4"  id="cardNumberContainer" style="display: none; padding-top: 25px">
+
+              <h6>Card number</h6>
+              <input type="text" id="card-number" placeholder="Card Number" onblur="checkCardNumber()">
+              <label id="error_card-number"></label>
+
+              <h6>CVV</h6>
+              <input type="password" id="cvv" placeholder="Cvv" onblur="checkCvv()" style="width:20%"></br>
+              <label id="error_cvv"></label>
+
+
+            </div>
+
+          </br>
+          <div  class="col-4" id="paypalContainer" style="display: none; padding-top: 30px">
+
+            <h6>Paypal e-mail</h6>
+            <input type="text" id="paypal" placeholder="Paypal" onblur="checkPaypal()">
+            <label id="error_paypal"></label>
+            <h6>Password</h6>
+            <input type="password" id="pwdPay" placeholder="Password" onblur="checkPwdPaypal()">
+            <label id="error_pwdPay"></label>
+
+          </div>
+          <div class="col-1"></div>
+
+
+
+
+          <button type="button" id="buy" style="display: none; margin-right: auto;margin-left: auto;background-color: #e3c9ee;border:none"  onclick="checkPayment()">Buy Now!</button>
+
+        </div>
+
+
+
+
+      </div>
+
+
+
+
+      <footer>
+       <center style="padding-top: 30px">
+        <img src="logo_nero.png" width="100px">
+        <h6> Benedetta Spina & Veronica Mandelli</h6>
+        <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+      </footer>
+
+
+    </body>
+    </html>
+
+
+
+

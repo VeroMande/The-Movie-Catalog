@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Action</title>
+  <script>
+
+
+
+   document.addEventListener('DOMContentLoaded', function () {
+
+
+//menu generi
+
+ //api che ritorna id e nome genere associato
+ get_url("https://api.themoviedb.org/3/genre/movie/list?api_key=e5cc0a861c328c8c659316a3fe327d0f", function(status,data) {
+  for(var i = 0; i < data.genres.length; i++) {
+    const url = window.location.search;
+    const urlParams = new URLSearchParams(url);
+    var idUrl= urlParams.get('id')
+
+//do il titolo in base all'id del genere passato nell'url
+if (idUrl==data.genres[i].id) {
+  document.getElementById('title').innerHTML=data.genres[i].name
+}
+  //stampo il menu generi
+  var id= data.genres[i].id
+            document.getElementById('menu_generi').innerHTML += "<button  type='button' onClick=location.href='generi.html?id="+id+"' class='list-group-item list-group-item-action'>"+ data.genres[i].name+"</button>"  //classe definita in bootstrap
+          }
+        });
+
+
+ 
+ 
+
+
+ //caso in cui sono utente loggato 
+ if ( (sessionStorage.getItem('UserLogged') != null) ) {
+      mostra(document.getElementById('imgCart')) //relativo alla navbar
+      returnSellingFilms()
+
+
+    //caso in cui sono loggato da shopkeeper o utente non registrato
+  } else if ((sessionStorage.getItem('ShopkeeperLogged') != null)||( (sessionStorage.getItem('UserLogged') === null) && (sessionStorage.getItem('ShopkeeperLogged') === null) ))  {
+
+//funzioni per disabilitare carrello
+nascondi(document.getElementById('imgCart'))
+document.getElementById('cart').href="javascript:void(0)"
+document.getElementById('cart').style="pointer-events: none"
+document.getElementById('cart').style="cursor:default"
+
+
+showPageOfThisGenre(1)
+showButtonPagesOfThisGenre()
+
+
+}
+
+
+});
+
+</script>
+
+
+
+</head>
+
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+  <!--NAVBAR-->
+  <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="index.html" style="color:white">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+          </li>
+          <li class="nav-item" >
+            <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;display:none"></a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="row"  style="background-color:  #e3c9ee;margin-top: 40px"><h1  id="title" style="text-align: center;color:#721e88;"></h1>
+  </div>
+
+
+  <div class="row">
+    <div class="col-2" id="menu_generi"></div>
+    <div class="col-1"></div>
+    <div id="film" class="col-9"></div>
+  </div></br>
+  <!--navbar impaginazione-->
+  <nav aria-label="Page navigation example">
+    <ul class="pagination  justify-content-end" id="pagination">
+    </ul>
+  </nav>
+
+  <footer>
+   <center style="padding-top: 30px">
+    <img src="logo_nero.png" width="100px">
+    <h6> Benedetta Spina & Veronica Mandelli</h6>
+    <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+  </footer>
+</body>
+</html>
+

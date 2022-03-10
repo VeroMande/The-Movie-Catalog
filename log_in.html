@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Log-in</title>
+  <script>
+
+    function checkUsernameLogIn() {
+
+
+      var username = document.getElementById("username").value;
+
+      var result = true;
+      if(username.length > 0) {
+
+        document.getElementById('username').style.borderBottom="solid 2px gray"
+        document.getElementById('error_username').innerHTML = ' '
+
+      } else {
+        document.getElementById('username').style.borderBottom="solid 2px red"  
+        document.getElementById('error_username').innerHTML = 'Required field'      
+      }
+
+      return result;
+
+    }
+
+
+    function checkPasswordLogIn() {
+
+
+      var pw= document.getElementById("password").value;
+
+      var result = true;
+      if(pw.length > 0) {
+        document.getElementById('password').style.borderBottom="solid 2px gray"
+        document.getElementById('error_password').innerHTML = ' '
+
+      } else {
+        document.getElementById('password').style.borderBottom="solid 2px red"  
+        document.getElementById('error_password').innerHTML = 'Required field'         
+      }
+
+      return result;
+
+    }
+
+    function checkForm() {
+      //controlla se campo non è stato compilato
+      ControllLength(document.getElementById('username'),document.getElementById('error_username'));
+      ControllLength(document.getElementById('password'),document.getElementById('error_password'));
+
+    }
+
+//passa nel session storage le informazioni relative a quell'utente con quello username
+function SaveUserLogged() {
+
+  var user= document.getElementById('username').value
+  var users=JSON.parse(localStorage.getItem('RegisteredUsers'))
+  for (i=0; i<users.length; i++) {
+    if (users[i]['username'] === user) {
+      window.sessionStorage.setItem('UserLogged',JSON.stringify(users[i]))
+    }
+
+  }
+
+
+}
+
+//passa nel session storage le informazioni relative a quel venditore con quello username
+function SaveShopkeeperLogged() {
+ var shopkeeper= document.getElementById('username').value
+
+
+ var shopkeepers=JSON.parse(localStorage.getItem('RegisteredShopkeepers'))
+ for (i=0; i<shopkeepers.length; i++) {
+
+  if (shopkeepers[i]['username'] === shopkeeper) {
+    window.sessionStorage.setItem('ShopkeeperLogged',JSON.stringify(shopkeepers[i]))
+  }
+
+}
+}
+
+
+//passo un array dei registrati(o users o shopkeepers)-->e controllo se l'utente inserito è registrato
+function Registered(value) {
+  for (i=0; i<value.length; i++) {
+
+    if (value[i]['username'] === document.getElementById('username').value && value[i]['password']===document.getElementById('password').value) {
+
+      return true
+      break
+    } else {
+      continue
+    }
+  }
+
+  return false 
+}
+
+//salva chi si  logga nel sessionStorage
+function log_in() {
+  var username= document.getElementById('username').value;
+
+  var RegisteredUsers=JSON.parse(localStorage.getItem('RegisteredUsers'));
+  var RegisteredShopkeepers=JSON.parse(localStorage.getItem('RegisteredShopkeepers'));
+
+             //se esistono nel local solo shopkeepers
+             if ((RegisteredUsers==null) && (RegisteredShopkeepers!=null)) {
+              if (!(Registered(RegisteredShopkeepers))) {
+               document.getElementById('error_account').innerHTML = '<h6><b>Incorrect username or password</b></h6>'
+             } else {
+              SaveShopkeeperLogged()
+              location.href='shopkeeper_page.html'
+            }
+            //se esitono nel local solo utenti
+          } else if ((RegisteredUsers!=null) &&(RegisteredShopkeepers==null)) {
+           if (!(Registered(RegisteredUsers))) {
+            document.getElementById('error_account').innerHTML = '<h6><b>Incorrect username or password</b></h6>'
+          } else {
+            SaveUserLogged()
+            location.href='user_page.html'
+          }
+
+              //se esistono entrambi nel local
+            } else if ((RegisteredUsers!=null) &&(RegisteredShopkeepers!=null)) {
+              if (!(Registered(RegisteredShopkeepers)) && (!(Registered(RegisteredUsers)))) {
+                document.getElementById('error_account').innerHTML = '<h6><b>Incorrect username or password</b></h6>'
+              } else if (Registered(RegisteredUsers)) {
+                SaveUserLogged()
+                location.href='user_page.html'
+              } else if (Registered(RegisteredShopkeepers)) {
+                SaveShopkeeperLogged()
+                location.href='shopkeeper_page.html'
+              }
+            }
+          }
+
+
+        </script>
+
+
+      </head>
+
+
+      <body>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+        <div class="container">
+         <div class="row">
+          <div class="col-1"></div>
+
+          <div class="col-4">  
+            <form id="log_in"  method="GET" >
+              <h5><b>Do you already have an account?</br> Identified</b></h5></br>
+              
+              <div >
+                <h6>Username</h6>
+                <input type="text" id="username" placeholder="Username" onblur="checkUsernameLogIn()">
+                <label id="error_username"></label>
+              </div></br>
+              <div>
+                <h6>Password</h6>
+                <input type="password" id="password" placeholder="Password" onblur="checkPasswordLogIn()">
+                <label id="error_password"></label>
+              </div></br>
+              <p id="error_account"></p>
+              <button type="button" class="btn btn-dark" style="width:100%" onclick="checkForm(),log_in()">Log-in</button>
+            </form>
+
+          </div>
+          <div class="col-1" id ="riga"> </div>
+
+          <div class="col-1"></div>
+          <div class="col-4" >
+            <h4><b>Don't have an account?</br>Register</b></h4>
+            <h6 style="color:green">It's going to take 30 seconds!</h6></br>
+            <img src="carrello.png" width="35" height="35"><b> Put it in your cart and buy</b></br></br>
+            <img src="cash.png" width="40" height="42"><b>All the movies you want at the best price</b></br></br>
+            <img src="tv.png" width="35" height="35"><b> Where you want, when you want</b></br></br>
+
+            <button type="button" class="btn btn-outline-dark" style="width:100%" onclick="location.href='signing_up.html'">Create account</button>
+
+          </div>
+          <div class="col-1">  <a href="progetto.html"><img src="x.png" width="20" height="20"></a></div>
+
+        </div>
+
+
+      </div>
+
+
+    </body>
+    </html>
+
+    <!--local storage può salvare solo stringhe-->
+
+

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Shopkeeper_Page</title>
+  <script>
+
+
+    function showStatistics()  {
+      var dictRental=statisticRental()
+      var dictShop=statisticShop()
+
+
+      for(var key in dictRental) {
+       document.getElementById('statisticRental').innerHTML+="<div class='row'style='margin-top:15px;margin-bottom:15px'><div class='col-4'><h6>"+key+"</h6></div><div class='col-4'><h6>"+dictRental[key]+"</h6></div>"
+     }
+     for(var key in dictShop) {
+       document.getElementById('statisticShop').innerHTML+="<div class='row'style='margin-top:15px;margin-bottom:15px'><div class='col-4'><h6>"+key+"</h6></div><div class='col-4'><h6>"+dictShop[key]+"</h6></div>"
+     }
+
+   }
+
+
+
+
+   document.addEventListener('DOMContentLoaded', function () {
+
+    showStatistics()
+
+
+    var shopkeeper= JSON.parse(sessionStorage.getItem('ShopkeeperLogged'));
+    var name=shopkeeper['name'];
+    var last_name=shopkeeper['last_name']
+    var Email = shopkeeper['e-mail']
+    var username=shopkeeper['username']
+    var password=shopkeeper['password']
+    var vat_number=shopkeeper['vat_number'];
+    var company_name=shopkeeper['company_name']
+    var telephone_number = shopkeeper['telephone_number']
+    var  city=shopkeeper['city']
+    var address=shopkeeper['address']
+    var sellingPrice = shopkeeper['sellingPrice']
+    var rentalPrice = shopkeeper['rentalPrice']
+
+
+
+    document.getElementById('shopkeeper_hello').innerHTML = "Ciao!</br><b>"+name+"</b></br>"
+    document.getElementById('name').value = name
+    document.getElementById('last_name').value = last_name
+    document.getElementById('e-mail').value = Email
+    document.getElementById('username').value = username
+    document.getElementById('password').value = password
+    document.getElementById('vat_number').value = vat_number
+    document.getElementById('company_name').value = company_name
+    document.getElementById('telephone_number').value = telephone_number
+    document.getElementById('city').value = city
+    document.getElementById('address').value = address
+    document.getElementById('selling-price').value = sellingPrice
+    document.getElementById('rental-price').value = rentalPrice
+
+
+  });
+
+
+
+
+   function checkForm() {
+
+    ControllLength(document.getElementById('name'),document.getElementById('error_name'));
+    ControllLength(document.getElementById('last_name'),document.getElementById('error_last_name'));
+    ControllLength(document.getElementById('e-mail'),document.getElementById('error_e-mail'));
+    ControllLength(document.getElementById('vat_number'),document.getElementById('error_vat_number'))
+    ControllLength(document.getElementById('telephone_number'),document.getElementById('error_telephone_number'))
+    ControllLength(document.getElementById('company_name'),document.getElementById('error_company_name'))
+    ControllLength(document.getElementById('city'),document.getElementById('error_city'))
+    ControllLength(document.getElementById('address'),document.getElementById('error_address'))
+    ControllLength(document.getElementById('rental-price'),document.getElementById('error_rental-price'))
+    ControllLength(document.getElementById('selling-price'),document.getElementById('error_selling-price'))
+
+
+    if ((check1()==true)  && (check2()==true)  && (check3()==true) && (check6()==true)  && (check7()==true)  && (check8()==true) && (check9()==true)  && (check10()==true) && (check11()==true) && (check12()==true)  )  {
+
+      ChangeShopkeeperData();
+    } 
+  }
+
+
+
+</script>
+
+
+</head>
+
+
+<body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+  <!--NAVBAR-->
+  <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="index.html" style="color:white">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+          </li>
+          <li class="nav-item" >
+            <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;display:none"></a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+
+        <img src='nastro.png' width='70%'></br></br><h3 id="shopkeeper_hello"></h3>
+
+      </br>
+      <div>
+       <button type='button' onclick="mostra(document.getElementById('shopkeeper_personalData')),nascondi(document.getElementById('containerCatalog')),nascondi(document.getElementById('statistics'))" class='list-group-item list-group-item-action' style="width:80%;"><img src="client_icon.png" width="17%" hspace="13">Personal data</button>
+
+
+       <button type='button' onclick="mostraPersonalCatalog(1),showButtonPersonalCatalog(),nascondi(document.getElementById('shopkeeper_personalData')),nascondi(document.getElementById('statistics')),mostra(document.getElementById('containerCatalog'))" class='list-group-item list-group-item-action' style="width:80%;"><img src="catalog.png" width="17%" hspace="15">My personal catalog</button>
+       <button type='button' onclick="nascondi(document.getElementById('shopkeeper_personalData')),nascondi(document.getElementById('containerCatalog')),mostra(document.getElementById('statistics'))" class='list-group-item list-group-item-action' style="width:80%; "><img src="statistic.png" width="17%" hspace="15">Movie statistics sold</button>
+
+
+       <button type='button' onclick="log_out()" class='list-group-item list-group-item-action' style="width:80%;"><img src="log_out.png" width="17%" hspace="5">Log-out</button>
+     </div>
+
+
+   </div>
+
+   <div class="col-8">
+
+    <div id="shopkeeper_personalData">
+      <div style="float:left;width:75%">
+
+        <h2 style="color: #e3c9ee">Your personal data</h2></br>
+
+        <h4>Your account</h4></br>
+
+        <div >
+          <h6>Username</h6>
+          <input type="text" id="username" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px">
+
+          <label id="error_username"></label></br>
+          <button onclick="CheckUsernameChanged(sessionStorage.getItem('ShopkeeperLogged'),localStorage.getItem('RegisteredShopkeepers'))" class=" btn-dark" style="margin-top: 10px;width:85px;height: 30px;text-align: center">CHANGE</button>
+        </div></br>
+
+        <div >
+          <h6>Password</h6>
+          <input type="password"  id="password" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px">
+          <label id="error_password"></label></br>
+          <button onclick="CheckPwdChanged(sessionStorage.getItem('ShopkeeperLogged'),localStorage.getItem('RegisteredShopkeepers'))" class=" btn-dark" style="margin-top: 10px;width:85px;height: 30px;text-align: center">CHANGE</button>
+
+        </div></br></br>
+        <div  >
+          <h4>Your data</h4></br>
+          <h6>Name </h6>
+          <input type="text" id="name" onblur="check1()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_name"></label>
+        </div></br>
+
+        <div >
+          <h6>Last name</h6>
+          <input type="text"  id="last_name"   onblur="check2()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_last_name"></label>
+        </div></br>
+
+        <div >
+          <h6>E-mail</h6>
+          <input type="text"  id="e-mail" onblur="check3()" style="width:65%">
+
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_e-mail"></label>
+        </div></br>
+        <div  >
+
+          <h6>Vat Number </h6>
+          <input type="text" id="vat_number" onblur="check6()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_vat_number"></label>
+        </div></br>
+        <div  >
+
+          <h6>Company Name</h6>
+          <input type="text" id="company_name" onblur="check7()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_company_name"></label>
+        </div></br>
+        <div  >
+
+          <h6>Telephone Number </h6>
+          <input type="text" id="telephone_number" onblur="check8()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_telephone_number"></label>
+        </div></br>
+        <div  >
+
+          <h6>City </h6>
+          <input type="text" id="city" onblur="check9()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_city"></label>
+        </div></br>
+        <div  >
+
+          <h6>Address </h6>
+          <input type="text" id="address" onblur="check10()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_address"></label>
+
+        </div></br>
+        <div  >
+
+          <h6>Selling price </h6>
+          <input type="text" id="selling-price" onblur="check11()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_selling-price"></label>
+        </div></br>
+        <div  >
+
+          <h6>Rental price </h6>
+          <input type="text" id="rental-price" onblur="check12()" style="width:65%">
+          <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+          <label id="error_rental-price"></label>
+        </div></br>
+
+
+
+
+        <button type='button' onclick=" checkForm()" class=" btn-outline-dark" style="width:65%; height:50px;text-align: center "><b>UPDATE YOUR DATA</b></button>
+
+      </div>
+
+      <div style="float:right;width:25%">
+        <button type='button' onclick="confirmRemoval()" class="btn btn-danger" style="width:100%; height:50px;text-align: center;font-size: 1vw ">REMOVE ACCOUNT</button>
+      </div>
+
+    </div>
+
+
+
+    <div id="statistics" style="display:none">
+      <div id="statisticShop">
+        <h1>Movie statistics sold</h1>
+
+        <div class='row' style="margin-top: 30px">
+          <div class='col-4'><b style="color:#9d2c83">MOVIE</b></div><div class='col-4'><b style="color:#9d2c83">TOTAL SALES</b></div><div class='col-4'></div>
+
+        </div>
+      </div >
+      <div id="statisticRental" style="margin-top: 100px">
+       <h1>Rented movie statistics</h1>
+
+       <div class='row' style="margin-top: 30px">
+        <div class='col-4'><b style="color:#9d2c83">MOVIE</b></div><div class='col-4'><b style="color:#9d2c83">TOTAL RENTED</b></div><div class='col-4'></div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <div id="containerCatalog"  style="display:none">
+    <div id="catalog"></div>
+    <nav aria-label="Page navigation example" style="clear:both;padding-top: 20px">
+      <ul class="pagination  justify-content-end" id="paginationPersonalCatalog"> </ul>
+    </nav>
+
+
+  </div>
+</div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+<div>
+ <footer>
+   <center style="padding-top: 30px">
+    <img src="logo_nero.png" width="100px">
+    <h6> Benedetta Spina & Veronica Mandelli</h6>
+    <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+  </footer>
+
+</body>
+</html>

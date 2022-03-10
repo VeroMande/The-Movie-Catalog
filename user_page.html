@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>User_Page</title>
+  <script>
+
+//fa uscire menu a tendina
+var expanded = false;
+
+function showCheckboxes() {
+  var checkboxes = document.getElementById("checkboxes_genres");
+
+  if (!expanded) {              //è una variabile che dice se un div è espanso o meno
+    checkboxes.style.display = "block";
+    expanded = true;
+  } else {
+    checkboxes.style.display = "none";
+    expanded = false;
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+//calcolo i generi più visti di un utente-->in base ai film acquistati-->li salvo nel session storage
+statisticGenresSeen()
+
+//tendina generi nel menu a tendina
+get_url("https://api.themoviedb.org/3/genre/movie/list?api_key=e5cc0a861c328c8c659316a3fe327d0f", function(status,data) {
+  for(i = 0; i < data.genres.length; i++) {
+    var id= data.genres[i].id
+    var user= JSON.parse(sessionStorage.getItem('UserLogged'))
+    var fav_gen=JSON.parse(user['favourites_genres'])
+    if (fav_gen.length>0) {
+      if(containsString(fav_gen,data.genres[i]['name']))  {
+                                  //se era già selezionato lo da checked
+                                  document.getElementById('checkboxes_genres').innerHTML += "<input type='checkbox' checked class='selected_genres' value="+data.genres[i].name+">"+" "+data.genres[i].name+"</br>"
+
+                                } else  {
+                                 console.log(data.genres[i]['name'])
+                                 document.getElementById('checkboxes_genres').innerHTML += "<input type='checkbox' class='selected_genres' value="+data.genres[i].name+">"+" "+data.genres[i].name+"</br>"
+                               }
+
+                             } else if (fav_gen.length<=0) {
+                              document.getElementById('checkboxes_genres').innerHTML += "<input type='checkbox' class='selected_genres' value="+data.genres[i].name+">"+" "+data.genres[i].name+"</br>"
+                            }
+                          }
+
+                        });
+
+//stampo gli ordini relativi a questo utente
+var user= JSON.parse(sessionStorage.getItem('UserLogged'))
+
+if(localStorage.getItem('Orders')!=null) {
+
+  var orders=JSON.parse(localStorage.getItem('Orders'))
+
+  for(var i=0;i<orders.length;i++) {
+
+    if(orders[i]['user']==user['username']) {
+
+      document.getElementById('userOrders').innerHTML+="<div class='row'style='margin-top:15px;margin-bottom:15px' ><div class='col-3'><h6>"+reportOrder(i)+"</h6></div><div class='col-3'><h6>$"+orders[i]['tot']+"</h6></div><div class='col-3'><h6>"+orders[i]['date']+"</h6></div><div class='col-3'><h6>"+orders[i]['hour']+"</h6></div><div class='row' style='border:solid #e3c9ee 0.1px' ></div>"
+
+    }
+
+  }
+} 
+
+//far uscire nella form i dati
+var user= JSON.parse(sessionStorage.getItem('UserLogged'));
+var name=user['name'];
+var last_name=user['last_name']
+var Email = user['e-mail']
+var username=user['username']
+var password=user['password']
+
+
+document.getElementById('user_hello').innerHTML = "Ciao!</br><b>"+name+"</b></br>"
+document.getElementById('name').value = name
+document.getElementById('last_name').value = last_name
+document.getElementById('e-mail').value = Email
+document.getElementById('username').value = username
+document.getElementById('password').value = password
+
+
+
+mostraPersonalMovieList(1)
+showButtonUserList()
+});
+
+
+function checkForm() {
+
+        //fa uscire la scritta rewquired al click(se non sono compilati)
+        ControllLength(document.getElementById('name'),document.getElementById('error_name'));
+        ControllLength(document.getElementById('last_name'),document.getElementById('error_last_name'));
+        ControllLength(document.getElementById('e-mail'),document.getElementById('error_e-mail'));
+
+        if ((check1()==true) && (check2()==true) && (check3()==true))  {
+
+          ChangeUserData();
+          
+
+        } 
+
+      }
+
+
+      function deleteShoppingCart() {
+        sessionStorage.removeItem('ShoppingCart')
+      }
+
+
+
+    </script>
+
+
+  </head>
+
+
+  <body>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <!--NAVBAR-->
+    <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html" style="color:white">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+            </li>
+            <li class="nav-item" >
+              <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;"></a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-4">
+
+          <img src='nastro.png' width='70%'></br></br><h3 id="user_hello"></h3>
+
+        </br>
+        <div>
+         <button type='button' onclick="mostra(document.getElementById('personal_info_user')),nascondi(document.getElementById('userOrders')),nascondi(document.getElementById('containerList'))" class='list-group-item list-group-item-action' style="width:80%;"><img src="client_icon.png" width="20%" hspace="13">Personal data</button>
+         <button type='button' onclick="mostra(document.getElementById('userOrders')) ,nascondi(document.getElementById('personal_info_user')),nascondi(document.getElementById('containerList'))" class='list-group-item list-group-item-action' style="width:80%;"><img src="package.png" width="20%" hspace="5">Your purchases</button>
+         
+         <button type='button' onclick="mostra(document.getElementById('containerList')),nascondi(document.getElementById('personal_info_user')),nascondi(document.getElementById('userOrders'))" class='list-group-item list-group-item-action' style="width:80%; height:50px"><img src="rull.png" width="16%" hspace="5">Personal Movie List</button>
+         <button type='button' onclick="log_out(),deleteShoppingCart()" class='list-group-item list-group-item-action' style="width:80%"><img src="log_out.png" width="20%" hspace="5">Log-out</button>
+       </div>
+       
+
+     </div>
+
+     <div class="col-8">
+
+      <div id="personal_info_user" style="display:none">
+        <div style="float:left;width:75%">
+
+          <h2 style="color: #e3c9ee">Your personal data</h4></br>
+
+            <h4>Your account</h4></br>
+
+            <div >
+              <h6>Username</h6>
+              <input type="text" id="username" style="width:65%">
+              <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+
+              <label id="error_username"></label></br>
+              <button onclick="CheckUsernameChanged(sessionStorage.getItem('UserLogged'),localStorage.getItem('RegisteredUsers'))" class=" btn-dark" style="margin-top: 10px;width:85px;height: 30px;text-align: center">CHANGE</button>
+            </div></br>
+
+            <div >
+              <h6>Password</h6>
+              <input type="password"  id="password" style="width:65%">
+              <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+              <label id="error_password"></label></br>
+              <button onclick="CheckPwdChanged(sessionStorage.getItem('UserLogged'),localStorage.getItem('RegisteredUsers'))" class=" btn-dark" style="margin-top: 10px;width:85px;height: 30px;text-align: center">CHANGE</button>
+
+            </div></br></br>
+
+
+            <div  >
+              <h4>Your data</h4></br>
+              <h6>Name </h6>
+              <input type="text" id="name" onblur="check1()" style="width:65%">
+              <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+              <label id="error_name"></label>
+            </div></br>
+
+
+            <div >
+              <h6>Last name</h6>
+              <input type="text"  id="last_name" onblur="check2()" style="width:65%">
+              <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+              <label id="error_last_name"></label>
+            </div></br>
+
+            <div >
+              <h6>E-mail</h6>
+              <input type="text"  id="e-mail" onblur="check3()" style="width:65%">
+
+              <img src="matita.png" width="20" height="20" style="margin-left: 15px; margin-bottom: 20px"></br>
+              <label id="error_e-mail"></label>
+            </div></br>
+            <div>
+             <form >
+              <div id="multiselect">
+                <div class="selectBox" onclick="showCheckboxes()">
+                  <select>
+                    <option>Change your favourites genres</option>
+                  </select>
+                  <div class="overSelect"></div>
+                </div>
+                <div id="checkboxes_genres">
+
+                </div>
+              </div>
+            </form>
+          </div></br>
+
+
+          <button type='button' onclick="checkForm()" class=" btn-outline-dark" style="width:65%; height:50px;text-align: center "><b>UPDATE YOUR DATA</b></button>
+        </div>
+        <div style="float:right;width:25%">
+          <button type='button' onclick="confirmRemoval()" class="btn btn-danger" style="width:100%; height:50px;text-align: center;font-size: 1vw ">REMOVE ACCOUNT</button>
+        </div>
+
+      </div></br>
+
+
+
+
+
+      <div id="userOrders" style="display:none">
+        <h1>Orders History</h1>
+
+        <div class='row' style="margin-top: 30px">
+          <div class='col-3'><b style="color:#9d2c83">PRODUCTS</b></div><div class='col-3'><b style="color:#9d2c83">TOTAL</b></div><div class='col-3'><b style="color:#9d2c83">DATE</b></div><div class='col-3'><b style="color:#9d2c83">HOUR</b></div>
+
+        </div>
+
+      </div>
+
+      <div id="containerList" >
+        <h1>Personal movie list</h1>
+        <div id="movie-list"></div>
+        <nav aria-label="Page navigation example" style="clear:both;padding-top: 20px">
+          <ul class="pagination  justify-content-end" id="paginationUserList"></ul>
+        </nav>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+  <div>
+  </div>
+
+</div>
+</div>
+<footer>
+ <center style="padding-top: 30px">
+  <img src="logo_nero.png" width="100px">
+  <h6> Benedetta Spina & Veronica Mandelli</h6>
+  <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+</footer>
+
+</body>
+</html>
+
+
+
+

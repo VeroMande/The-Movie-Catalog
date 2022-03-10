@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Action</title>
+  <script>
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+      if ((sessionStorage.getItem('ShopkeeperLogged') != null) || ((sessionStorage.getItem('ShopkeeperLogged') == null) && (sessionStorage.getItem('UserLogged') == null))) {
+        mostraAttore();
+  //film linkabili
+  showFilmsOfActhor()
+
+  //funzioni per disabilitare carrello
+  nascondi(document.getElementById('imgCart'))
+  document.getElementById('cart').href="javascript:void(0)"
+  document.getElementById('cart').style="pointer-events: none"
+  document.getElementById('cart').style="cursor:default"
+
+
+} else if(sessionStorage.getItem('UserLogged') != null) {
+  mostraAttore()
+  //film non linkabili
+  showFilmsOfActor_users()
+  mostra(document.getElementById('imgCart'))
+}
+});
+
+
+
+
+
+</script>
+
+
+
+</head>
+
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+  <!--NAVBAR-->
+  <nav class="navbar navbar-expand-lg navbar-light " class="navbar navbar-light" style="background-color: #721e88;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="logo.png" style="width: 120px"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="index.html" style="color:white">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="ShowPersonalPage()" style="color:white"><img src="omino.png" style="width: 24px" > Account</a>
+          </li>
+          <li class="nav-item" >
+            <a class="nav-link" id="cart"  href="cart.html"><img id="imgCart" src="cart.png" style="width: 30px;display:none"></a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container">
+    <div class="row" id="info_actor">
+      <div class="col-4" id="photo_actor"></div>
+      <div class="col-8">
+        <div class="row">
+          <div class="col-12" id="name_actor"></div>
+        </div></br>
+        <div class="row">
+          <h5>Biography:</h5>
+          <div class="col-12" id="biography"></div>
+        </div></br>
+        <div class="row">
+          <div class="col-6"><h5>Birthday:</h5></div>
+          <div class="col-6"><h5>Birth-place:</h5></div>
+        </div></br>
+        <div class="row">
+          <div class="col-6" id="birthday"></div>
+          
+          <div class="col-6" id="birth_place"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="wrapper"></div>
+  </div>
+
+  <footer>
+   <center style="padding-top: 30px">
+    <img src="logo_nero.png" width="100px">
+    <h6> Benedetta Spina & Veronica Mandelli</h6>
+    <i><h4>Progetto Applicazioni Web & Cloud</h4></i></center>
+
+  </footer>
+
+
+
+
+</body>
+</html>

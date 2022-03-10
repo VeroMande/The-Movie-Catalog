@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" type="text/css" href="css_progetto.css">
+  <script type="text/javascript" src="js_progetto.js"></script>
+
+  <title>Progetto</title>
+  <script>
+
+
+//questi check funzionano al premere e ripremere dei tasti (senza cliccare il bottone della form)
+document.addEventListener('DOMContentLoaded', function () {
+
+
+
+
+  //tendina generi
+  get_url("https://api.themoviedb.org/3/genre/movie/list?api_key=e5cc0a861c328c8c659316a3fe327d0f", function(status,data) {
+
+    for(i = 0; i < data.genres.length; i++) {
+      var id= data.genres[i].id
+                        //onClick=\" getId(" + data.genres[i].id +"); nascondi(document.getElementById('carousel')) \"
+                        
+                        document.getElementById('checkboxes_genres').innerHTML += "<input type='checkbox' class='selected_genres' value="+data.genres[i].name+">"+" "+data.genres[i].name+"</br>"
+
+
+                      }
+
+
+                    });
+
+          //controllo il check per registrazione da shopkeeper
+          var checkboxShopkeeper = document.getElementById('shopkeeper');
+
+  checkboxShopkeeper.addEventListener('change', function () {    //change è l'evento da gestire, la funzione è l'handler-->funzione di callback in risposta dell'evento
+
+    if (checkboxShopkeeper.checked) {
+
+      mostra(document.getElementById('form_shopkeeper'))
+      nascondi(document.getElementById('info_personal_user'))
+      mostra(document.getElementById('info-prices'))
+
+    } else {
+
+      nascondi(document.getElementById('form_shopkeeper'))
+      mostra(document.getElementById('info_personal_user'))
+      nascondi(document.getElementById('info-prices'))
+
+    }
+
+  });
+
+  var checkboxPrivacy = document.getElementById('check_privacy');
+
+  checkboxPrivacy.addEventListener('change', function () {    
+    if (checkboxPrivacy.checked) {
+
+      document.getElementById('error_privacy').innerHTML = ' '
+
+    }
+
+
+  });
+
+  var checkboxFavourites = document.getElementById('check_favourites');
+
+  checkboxFavourites.addEventListener('change', function () {    
+    if (checkboxFavourites.checked) {
+
+      mostra(document.getElementById('multiselect'));
+
+    } else {
+      nascondi(document.getElementById('multiselect'))
+
+    }
+
+  });
+  
+});
+
+
+
+function CheckForm() {
+
+//controlla se campo non è stato compilato
+ControllLength(document.getElementById('name'),document.getElementById('error_name'));
+ControllLength(document.getElementById('last_name'),document.getElementById('error_last_name'));
+ControllLength(document.getElementById('e-mail'),document.getElementById('error_e-mail'));
+ControllLength(document.getElementById('username'),document.getElementById('error_username'))
+ControllLength(document.getElementById('password'),document.getElementById('error_password'))
+ControllLength(document.getElementById('vat_number'),document.getElementById('error_vat_number'))
+ControllLength(document.getElementById('telephone_number'),document.getElementById('error_telephone_number'))
+ControllLength(document.getElementById('company_name'),document.getElementById('error_company_name'))
+ControllLength(document.getElementById('city'),document.getElementById('error_city'))
+ControllLength(document.getElementById('address'),document.getElementById('error_address'))
+ControllLength(document.getElementById('rental-price'),document.getElementById('error_rental-price'))
+ControllLength(document.getElementById('selling-price'),document.getElementById('error_selling-price'))
+
+
+//controllo della privacy(check)
+if (!(document.getElementById('check_privacy').checked))  {
+  document.getElementById('error_privacy').innerHTML = 'You have to accept the <b>Privacy Policy</b>'
+
+}
+
+  //controllo per User-->se tutto è stato compilato correttamente
+  if ((check1()==true)  && (check2()==true)  && (check3()==true)  && (check4()==true)  && (check5()==true)   && (document.getElementById('check_privacy').checked) && (!(document.getElementById('shopkeeper').checked))) {
+
+    SaveUserToLocalStorage();
+
+//controllo per Shopkeeper-->se tutto è stato compilato correttamente
+} else if ((check1()==true)  && (check2()==true)  && (check3()==true)  && (check4()==true)  && (check5()==true) &&(check6()==true)  && (check7()==true)  && (check8()==true)  && (check9()==true)  && (check10()==true)  && (check11()==true)  && (check12()==true)   && (document.getElementById('check_privacy').checked) && (document.getElementById('shopkeeper').checked)) {
+
+  SaveShopkeeperToLocalStorage();
+}
+
+}
+
+
+//fa uscire menu a tendina
+var expanded = false;
+//al click della multiselect fa uscire menu generi
+function showCheckboxes() {
+  var checkboxes = document.getElementById("checkboxes_genres");
+
+  if (!expanded) {                          //è una variabile che dice se un div è espanso o meno
+    checkboxes.style.display = "block";
+    expanded = true;
+  } else {
+    checkboxes.style.display = "none";
+    expanded = false;
+  }
+}
+
+
+
+
+
+
+
+</script>
+
+
+</head>
+<body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+
+  <div class="container">
+   <div class="row">
+    <div class="col-1"> <a href="log_in.html"><img src="arrow.png" width="40" height="32"></a></div>
+
+    <div class="col-4">  
+      <form  method="GET" >
+        <h3><b>Enter your personal data</b></h3></br>
+        <div class="row">
+          <div class="col-9">
+            <h5>Are you a shopkeeper?</h5>
+          </div>
+          <div class="col-3">
+            <label class="switch">
+              <input type="checkbox" id="shopkeeper">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div><br>
+        <div>
+          <h6>Name </h6>
+          <input type="text" id="name" placeholder="Name" onblur="check1()">
+          <label id="error_name"></label>
+        </div></br>
+        <div >
+          <h6>Last name</h6>
+          <input type="text"  id="last_name"  placeholder="Last name" onblur="check2()">
+          <label id="error_last_name"></label>
+        </div></br>
+        <div >
+          <h6>E-mail</h6>
+          <input type="text"  id="e-mail" placeholder="E-mail" onblur="check3()">
+          <label id="error_e-mail"></label>
+        </div></br>
+        <div >
+          <h6>Username</h6>
+          <input type="text" id="username" placeholder="Username" onblur="check4()">
+          <label id="error_username"></label>
+        </div></br>
+
+        <div>
+          <h6>Password</h6>
+          <input type="password" id="password" placeholder="Password" onblur="check5()">
+          <label id="error_password"></label>
+        </div>
+
+
+        <div id="form_shopkeeper" style="display:none">
+
+          <div >
+            <h6>VAT number</h6>
+            <input type="text" id="vat_number" placeholder="VAT number" onblur="check6()"> 
+            <label id="error_vat_number"></label>
+          </div></br>
+          <div >
+            <h6>Company name</h6>
+            <input type="text" id="company_name" placeholder="Company name" onblur="check7()">
+            <label id="error_company_name"></label>
+          </div></br>
+          <div >
+            <h6>Telephone number</h6>
+            <input type="text" id="telephone_number" placeholder="Telephone number" onblur="check8()">
+            <label id="error_telephone_number"></label>
+          </div></br>
+          <div >
+            <h6>City</h6>
+            <input type="text" id="city" placeholder="City" onblur="check9()">
+            <label id="error_city"></label>
+          </div></br>
+
+          <div >
+            <h6>Address</h6>
+            <input type="text" id="address" placeholder="Address" onblur="check10()">
+            <label id="error_address"></label>
+          </div></br>
+        </div>
+
+      </div>
+      <div class="col-1" id ="riga"> </div>
+
+      <div class="col-1"></div>
+      <div class="col-4"  style="margin-top:65px">
+
+       <div id='info_personal_user'>      
+
+        <div class="row">
+          <div class="col-9">
+            I would like to receive from <b> The Movie Catalog </b>  personalized news about my favourites genres on my personal homepage
+          </div>
+          <div class="col-3">
+            <label class="switch">
+              <input type="checkbox" id="check_favourites">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div></br>
+        <form >
+          <div id="multiselect"  style="display: none">
+            <div class="selectBox" onclick="showCheckboxes()">
+              <select>
+                <option>Select your favourites genres</option>
+              </select>
+              <div class="overSelect"></div>
+            </div>
+            <div id="checkboxes_genres">
+
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+
+    </br>  
+    <div id="info-prices" style="display: none">
+      <h4>Enter your sales details</h4>
+      <h6>Selling price</h6>
+      <input type="text" id="selling-price" placeholder="1.00" onblur="check11()">
+      <label id="error_selling-price"></label>
+    </br>
+
+    <h6>Rental price</h6>
+    <input type="text" id="rental-price" placeholder="1.00" onblur="check12()">
+    <label id="error_rental-price"></label>
+  </br>
+</div>
+</br>
+
+
+
+<div class="row">
+  <div class="col-9">                                                                                            <!-- Button trigger modal -->
+    I was able to view and understand the information relating to the use of my personal data referred to in the <a  href="#" data-bs-toggle="modal" data-bs-target="#exampleModal"><b>Policy Privacy</b></a>
+  </div>
+  <div class="col-3">
+    <label class="switch">
+      <input type="checkbox" id="check_privacy">
+      <span class="slider round"></span>
+    </label>
+  </div>
+
+</div>
+<label id="error_privacy"></label><br><br>
+<button type="button" class="btn btn-primary"  onclick="CheckForm(),returnFavouriteGenresChecked()">Create account</button>
+
+
+</div>
+<div class="col-1"></div>
+</form>
+
+
+<!-- Modal->info Privacy Policy-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Authorization for the processing of personal data </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Dear Sir / Madam,
+
+        pursuant to Legislative Decree 196/2003, on the protection of persons and other subjects regarding the processing of
+        personal data, the processing of information concerning you will be based on the principles of
+        correctness, lawfulness and transparency and protecting your privacy and your rights.
+
+        In particular, data suitable for revealing racial and ethnic origin, religious beliefs,
+        philosophical or otherwise, political opinions, membership of parties, trade unions, associations or
+        organizations of a religious, philosophical, political or trade union nature, as well as suitable personal data a
+        disclose the state of health and sexual life, can only be treated with the
+        written consent of the interested party and with the prior authorization of the Data Protection Authority
+        personal (Article 26).
+
+        Pursuant to article 13 of the aforementioned decree, we therefore provide you with the following information.
+
+        1. The sensitive data you provide will be processed, within the limits of the General Authorization of
+        Guarantor n ... / 200 ..., for the following purposes: .................................... .................;
+
+        2. The treatment will be carried out in the following ways;
+        (Indicate the methods of treatment: manual / computerized / other)
+
+        3. The provision of data is optional / mandatory (if mandatory specify the reason
+        of the obligation) and any refusal to provide such data has no consequence / could lead to
+        failure or partial performance of the contract / failure to continue the relationship.
+        4. The data will not be disclosed to other subjects nor will it be disseminated
+        or
+        the data may / will be communicated to or disclosed to;
+        (Choose the option according to the characteristics of the treatment and indicate, if present, the scope
+        of communication and / or dissemination, without prejudice to the prohibition relating to data suitable for revealing the state
+        of health, as per art. 26, paragraph 5 of Legislative Decree 196/2003).
+
+        5. The data controller is:
+        (Indicate the name or company name and the domicile, residence or registered office of the owner)
+
+        6. The data controller is
+        (indicate at least one person in charge, and, if there is a person in charge designated for the purposes referred to in article 7 of
+        Legislative Decree 196/2003, indicate that subject; also indicate the site of the communication network or the
+        methods by which the updated list of
+        responsible)
+
+        7. the owner's representative in the territory of the State is
+        (if the holder is established in the territory of a country not belonging to the European Union and employs,
+        for the treatment, means located in the territory of the State also other than electronic ones o
+        in any case automated, unless they are used only for the purpose of transit in the territory
+        of European Union)
+
+        8. At any time you can exercise your rights towards the data controller, pursuant to
+        of article 7 of Legislative Decree 196/2003, which for his convenience we reproduce in full:
+
+
+        Legislative Decree n.196 / 2003,
+        Art. 7 - Right to access personal data and other rights
+
+        1. The interested party has the right to obtain confirmation of whether or not personal data exists
+        they concern, even if not yet registered, and their communication in an intelligible form.
+
+        2. The interested party has the right to obtain the indication:
+
+        a) the origin of the personal data;
+        b) the purposes and methods of the processing;
+        c) of the logic applied in case of treatment carried out with the aid of electronic instruments;
+        d) the identity of the owner, manager and the representative designated pursuant to
+        of article 5, paragraph 2;
+        e) the subjects or categories of subjects to whom the personal data may be communicated or who
+        they can learn about it as appointed representative in the territory of the State, of
+        managers or agents.
+
+        3. The interested party has the right to obtain:
+
+        a) updating, rectification or, when interested, integration of data;
+        b) the cancellation, transformation into anonymous form or blocking of data processed in violation d
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+</div>
+</div>
+</body>
+
+
+</body>
+</html>
+
