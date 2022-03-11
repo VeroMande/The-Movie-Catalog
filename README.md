@@ -43,9 +43,33 @@ modificare/cancellare prodotti esistenti di cui è responsabile.
 dei clienti all’interno di un’applicazione di ordini online. 
 I clienti devono potersi registrare, modificare i propri dati/preferenze, cancellarsi. 
 Per ogni utente si devono memorizzare informazioni personali (ad es., nome, cognome) e informazioni relative all’account generato. Al cliente vengono anche associate informazioni riguardanti il meccanismo di pagamento dei prodotti (ad es., carta di credito o carta prepagata). Inoltre, in fase di registrazione gli utenti possono selezionare delle preferenze (tra le quali quelle di privacy e relative all’applicazione) per la personalizzazione dei servizi (ad es., offerte speciali in bacheca per la tipologia di genere preferito). In questo scenario, gli utenti registrati (min 2) possono fare login al sito, selezionare un film di interesse, aggiungerlo al carrello e concludere il pagamento dei film nel carrello.
+
 Al momento del pagamento dell’ordine l’utente può essere decidere tra due modalità:
-– acquisto perpetuo: il film acquisito sarà sempre disponibile tra i film disponibili per la 
-visione del cliente;
-– noleggio: il film pagato dal cliente sarà disponibile nel film visibili dal cliente solo 
-per 72h dal giorno dell’acquisto; successivamente, rimarrà in elenco ma sarà indicato come non
-disponibile per la visione.
+  – acquisto perpetuo: il film acquisito sarà sempre disponibile tra i film disponibili per la visione del
+    cliente;
+  – noleggio: il film pagato dal cliente sarà disponibile nel film visibili dal cliente solo per 72h dal
+    giorno dell’acquisto; successivamente, rimarrà in elenco ma sarà indicato come non disponibile per la
+    visione.
+ 
+# Operazioni obbligatorie
+Le operazioni base che devono essere presentate al momento della discus- sione del progetto sono le seguenti:
+– Visualizzazione di informazioni relative ai film, ai clienti e ai negozianti registrati, agli acquisti.
+– Visualizzazione dei film.
+– Ricerca dei film (ad es., tipologia, nome, attori, enere).
+– Login al sito e acquisto di un film a scelta.
+– Visualizzazione degli acquisti presenti e passati per un cliente.
+– Visualizzazione statistiche per negoziante.
+– Gestione del palinsesto del negoziante con aggiunta/modifica/cancellazione dei prodotti.
+
+Allo startup dell’applicazione, tutti i dati necessari devono essere disponibili (in formato XML o JSON), memorizzati nel web storage e visualizzati nell’applicazione web.
+Le operazioni in questa sezione sono quelle che tutti i gruppi (indipendentemente dalla loro composizione) devono presentare all’esame. Operazioni e funzionalità aggiuntive possono essere implementate a piacere. Le pagine web devono essere implementate utilizzando HTML5, CSS3 e JavaScript, e devono seguire un paradigma di separazione tra la struttura (HTML5) e la rappresentazione (CSS3) della pagina web.
+Le informazioni visualizzate all’interno delle pagine del sito web de- vono essere memorizzate e accedute nel web storage del browser in formato XML o JSON. Devono essere perciò previste operazioni per la presentazione e modifica delle informazioni.
+    
+# Operazioni aggiuntive per gruppi di 2 persone
+In aggiunta alle operazioni base, gruppi di due persone devono sviluppare le seguenti operazioni aggiuntive:
+– Fornire le funzionalit ́a di review di un film (un numero interno compreso tra 0 e 5 stelle) per ogni utente finale registrato e dopo aver verificato che i dati inseriti siano corretti, postarlo tramite API REST (PUT/UPDATE) sul portale di The Movie DB (https: //www.themoviedb.org/).
+– Gestire tutte i tipi di risposte (anche quelle con HTTP STATUS 4xx) ottenute tramite API REST dal portale The Movie DB.
+– Bacheca con prodotti suggeriti sulla base dello storico degli acquisti e/o del profilo utente.
+
+Tutti i prodotti devo essere resi disponibili attraverso un server Web o una applicazione REST. Allo startup dell’applicazione, tutti i film (in for- mato XML o JSON) devono essere scaricati dal server web/applicazione REST, memorizzati nel web storage, e visualizzati nell’applicazione web. Un venditore deve essere in grado di aggiungere nuovi film, modificare e cancellare prodotti esistenti direttamente sul server Web/applicazione REST.
+
